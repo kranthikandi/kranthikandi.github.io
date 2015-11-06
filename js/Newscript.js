@@ -1,225 +1,62 @@
-// The root URL for the RESTful services
-var rootURL = "http://localhost:8080/kk_test/";
+/**
+ * 
+ *//*!
+ * jQuery Cookie Plugin v1.3.1
+ * https://github.com/carhartl/jquery-cookie
+ *
+ * Copyright 2013 Klaus Hartl
+ * Released under the MIT license
+ */
+(function(factory){if(typeof define==='function'&&define.amd){define(['jquery'],factory);}else{factory(jQuery);}}(function($){var pluses=/\+/g;function raw(s){return s;}function decoded(s){return decodeURIComponent(s.replace(pluses,' '));}function converted(s){if(s.indexOf('"')===0){s=s.slice(1,-1).replace(/\\"/g,'"').replace(/\\\\/g,'\\');}try{return config.json?JSON.parse(s):s;}catch(er){}}var config=$.cookie=function(key,value,options){if(value!==undefined){options=$.extend({},config.defaults,options);if(typeof options.expires==='number'){var days=options.expires,t=options.expires=new Date();t.setDate(t.getDate()+days);}value=config.json?JSON.stringify(value):String(value);return(document.cookie=[config.raw?key:encodeURIComponent(key),'=',config.raw?value:encodeURIComponent(value),options.expires?'; expires='+options.expires.toUTCString():'',options.path?'; path='+options.path:'',options.domain?'; domain='+options.domain:'',options.secure?'; secure':''].join(''));}var decode=config.raw?raw:decoded;var cookies=document.cookie.split('; ');var result=key?undefined:{};for(var i=0,l=cookies.length;i<l;i++){var parts=cookies[i].split('=');var name=decode(parts.shift());var cookie=decode(parts.join('='));if(key&&key===name){result=converted(cookie);break;}if(!key){result[name]=converted(cookie);}}return result;};config.defaults={};$.removeCookie=function(key,options){if($.cookie(key)!==undefined){$.cookie(key,'',$.extend({},options,{expires:-1}));return true;}return false;};}));
 
-var currentWine;
+function setCookie() {
+  $.cookie("visited", "true", { expires: 365 });
+}
 
-$(window).load(function() {
-	 // executes when complete page is fully loaded, including all frames, objects and images
-	 //alert("window is loadedzzzzzzzzz");
-	 
-	});
+if ($.cookie('visited') != 'true') {
+  $('#welcome, .overlay').show(100);
+  setCookie();
+} else {
+  $('#welcome').remove();
+}
 
+$('#sidebar').click(function() {
+  $('#welcome').hide(100);
+    $('.overlay').fadeOut(100);
+});
 
-var person = {
-		  firstName: "Jim",
-		  introduce: function(){
-			  console.log("Hi, I'm " + this.firstName);
-		  }
-		};
+$('#sidebar').mouseover(function(){
+	
+	$('.overlay').fadeOut(100);
+});
 
-		person.introduce();
-		// Outputs: Hi, I'm Jim
-		setTimeout(person.introduce, 20);
-		
-		
-		$('#test').click(function(){
-			alert("name");
-			
-			/*$.ajax({
-				type: 'GET',
-				url: rootURL,
-				dataType: "json", // data type of response
-				success: renderList
-			});*/
-		});
-		
-		$(function(){
-			  $('#chart').radarChart({
-			    size: [500, 400],
-			    step: 1,
-			    title: "My Skills",
-			    values: {
-			      "JavaScript": 4.1,
-			      "Node.js": 3.5,
-			      "jQuery": 4,
-			      "PHP": 3,
-			      "C++": 2.5,
-			      "Problem Solving": 3.5,
-			      "DHTML": 4
-			    },
-			    showAxisLabels: true
-			  });
-			});
+$('#thesisDoc').click(function(){
+	window.open('http://library.uh.edu/record=b6912261~S9', '_blank');
+	
+});
+$('#thesisDocs').click(function(){
+	window.open('http://library.uh.edu/record=b6912261~S9', '_blank');
+	
+});
+$('#paperPub').click(function(){
+	window.open('http://airccj.org/CSCP/vol2/csit2315.pdf', '_blank');
+});
+$('#paperPub2').click(function(){
+	window.open('http://airccj.org/CSCP/vol2/csit2315.pdf', '_blank');
+});
 
-			(function($) {
-			  
-			  var Radar = (function() {
-			    
-			    function Radar(ele, settings) {
-			      this.ele = ele;
-			      this.settings = $.extend({
-			        showAxisLabels: false,
-			        title: "Untitled",
-			        step: 1,
-			        size: [300,300],
-			        values: {},
-			        color: [0,128,255]
-			      },settings);
-			      this.width = settings.size[0];
-			      this.height = settings.size[1];
-			      $(ele).css({
-			        'position': 'relative',
-			        'width': this.width,
-			        'height': this.height
-			      });
-			      this.canvases = {};
-			      this.draw();
-			    }
-			    
-			    Radar.prototype.newCanvas = function(name, delay) {
-			      var delay = delay || 0;
-			      var canvas = document.createElement('canvas');
-			      canvas.width = this.width;
-			      canvas.height = this.height;
-			      $(canvas).css({
-			        'position': 'absolute'
-			      });
-			      this.canvases[name] = canvas;
-			      this.ele.appendChild(canvas);
-			      this.cxt = canvas.getContext('2d');
-			      if (delay != 0) {
-			        $(canvas).css('opacity',0).delay(delay).animate({opacity: 1}, 500);
-			      }
-			    }
-			    
-			    Radar.prototype.draw = function() {
-			      this.newCanvas('axis', 100);
-			      var min = 0;
-			      var max = 0;
-			      
-			      $.each(this.settings.values, function(i,val){
-			        if (val < min)
-			          min = val;
-			        if (val > max)
-			          max = val;
-			      });
-			      
-			      min = Math.floor(min);
-			      max = Math.ceil(max);
+// $.cookie("visited", null);
 
-			      var spacing = 20;
-			      
-			      for(var i = min; i <= max; i += this.settings.step) {
-			        this.cxt.beginPath();
-			        this.cxt.arc(this.width/2,
-			                     this.height/2,
-			                     this.settings.step * spacing * i,
-			                     0, 2 * Math.PI, false);
-			        this.cxt.strokeStyle = "#666";
-			        this.cxt.fillStyle = "#444";
-			        this.cxt.stroke();
-			        if (this.settings.showAxisLabels)
-			          this.cxt.fillText(i,this.width/2 + this.settings.step * spacing * i+4, this.height/2-2);
-			      }
-			      
-			      var size = 0;
-			      for(var key in this.settings.values)
-			        size += 1;
-			      
-			      for(var i = 0; i < size; i += 1) {
-			        this.cxt.beginPath();
-			        this.cxt.moveTo(this.width / 2, this.height /2);
-			        var x = this.width / 2 + Math.cos((Math.PI * 2) * (i / size)) * spacing * max;
-			        var y = this.height /2 + Math.sin((Math.PI * 2) * (i / size)) * spacing * max;
-			        this.cxt.lineTo(x, y);
-			        this.cxt.stroke();
-			      }
-			      
-			      this.newCanvas('part',200);
-			      
-			      this.cxt.beginPath();
-			      var first = true;
-			      var i = 0;
-			      var that = this;
-			      var end = {x: null, y: null};
-			      $.each(this.settings.values, function(key,val){
-			        var x = that.width / 2 + Math.cos((Math.PI * 2) * (i / size)) * spacing * val;
-			        var y = that.height / 2 + Math.sin((Math.PI * 2) * (i / size)) * spacing * val;
-			        if (first) {
-			          that.cxt.moveTo(x, y);
-			          end.x = x;
-			          end.y = y;
-			          first = false;
-			        }
-			        that.cxt.lineTo(x, y);
-			        i += 1;
-			      });
-			      
-			      this.cxt.lineTo(end.x, end.y);
-			      var grad = this.cxt.createLinearGradient(0, 0, 0, this.height);
-			      grad.addColorStop(0,"rgba("+this.settings.color[0]+","+this.settings.color[1]+","+this.settings.color[2]+",0)");
-			      grad.addColorStop(1,"rgba("+this.settings.color[0]+","+this.settings.color[1]+","+this.settings.color[2]+",1)");
-			      this.cxt.fillStyle = grad;
-			      this.cxt.shadowBlur = 2;
-			      this.cxt.shadowColor = "rgba(0, 0, 0, .2)";
-			      this.cxt.stroke();
-			      this.cxt.fill();
-			      
-			      this.newCanvas('labels',1000);
-			      
-			      i = 0;
-			      $.each(this.settings.values, function(key,val){
-			        that.newCanvas('label-'+i, i * 250);
-			        that.cxt.fillStyle = "rgba(0,0,0,.8)";
-			        that.cxt.strokeStyle = "rgba(0,0,0,.5)";
-			        that.cxt.font = "bold 12px Verdana";
-			        var dist = Math.min(spacing * val, size * spacing);
-			        var x = that.width / 2 + Math.cos((Math.PI * 2) * (i / size)) * spacing * val;
-			        var y = that.height / 2 + Math.sin((Math.PI * 2) * (i / size)) * spacing * val;
-
-			        var textX = that.width / 2 + Math.cos((Math.PI * 2) * (i / size)) * spacing * val;
-			        var textY = that.height / 2 + Math.sin((Math.PI * 2) * (i / size)) * spacing * val * 1.5;
-			        
-			        if (textX < that.width/2) {
-			          textX -= 75
-			          that.cxt.textAlign="end";
-			          that.cxt.beginPath();
-			          var width = that.cxt.measureText(key).width;
-			          that.cxt.moveTo(textX - width - 5, textY + 4);
-			          that.cxt.lineTo(textX + 15, textY + 4);
-			          that.cxt.lineTo(x - 2, y);
-			          that.cxt.lineWidth = 2;
-			          that.cxt.stroke();
-			        } else {
-			          textX += 75
-			          that.cxt.textAlign="start";
-			          that.cxt.beginPath();
-			          var width = that.cxt.measureText(key).width;
-			          that.cxt.moveTo(x + 2,y);
-			          that.cxt.lineTo(textX - 15, textY + 4);
-			          that.cxt.lineTo(textX + width + 5, textY + 4);
-			          that.cxt.lineWidth = 2;
-			          that.cxt.stroke();
-			        }
-			        that.cxt.fillText(key, textX, textY);
-			        //For arrows that aren't done.
-			        i += 1;
-			      });
-			      
-			      
-			      this.newCanvas('title',1000);
-			      this.cxt.font = "bold 24px Verdana";
-			      this.cxt.fillText(this.settings.title, 10, 30); 
-			    }
-			    
-			    return Radar;
-			    
-			  })();
-			  
-			  $.fn.radarChart = function(settings){
-			    this.each(function(i,ele){
-			      var radar = new Radar(ele, settings);
-			    });
-			  }
-			  
-			})(jQuery);
+$(window).load(function(){
+    $('.bwWrapper').BlackAndWhite({
+        hoverEffect : true, // default true
+        // set the path to BnWWorker.js for a superfast implementation
+        webworkerPath : false,
+        // this option works only on the modern browsers ( on IE lower than 9 it remains always 1)
+        intensity:1,
+        speed: { //this property could also be just speed: value for both fadeIn and fadeOut
+            fadeIn: 200, // 200ms for fadeIn animations
+            fadeOut: 800 // 800ms for fadeOut animations
+        }
+    });
+});
