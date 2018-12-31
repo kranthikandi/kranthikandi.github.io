@@ -63,6 +63,22 @@
     </header>
     <!--/.header-->
     <div id="#top"></div>
+	<div id="myModal" class="modal fade animate" data-backdrop="true">
+        <div class="modal-dialog" id="animate">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">SVCC 12/23</h5>
+            </div>
+            <div class="modal-body text-center p-lg">
+                <p>Please got to the Google Drive and download from the below link</p>
+                <pre> <a href=" https://drive.google.com/drive/folders/1MGNW13GgUhxvKiO_u9swCkpVzNFIs8WI?usp=sharing"> </a></pre>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn danger p-x-md" data-dismiss="modal">Close</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div>
+      </div>
     <section id="home">
         <div class="banner-container">
             <img src="images/banner-bg.jpg" alt="banner" />
@@ -750,6 +766,13 @@
     <!--[if lte IE 8]><script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script><![endif]-->
     <script src="js/modernizr-latest.js"></script>
     <script src="js/jquery-1.8.2.min.js" type="text/javascript"></script>
+	     <script>
+  
+    $(window).on('load',function(){
+        $('#myModal').modal('show');
+    });
+
+    </script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
     <script src="js/jquery.isotope.min.js" type="text/javascript"></script>
     <script src="js/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
