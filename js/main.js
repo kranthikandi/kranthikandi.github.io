@@ -255,7 +255,7 @@ function initParticles() {
 // Scroll Reveal Animation
 // ===================================
 function revealOnScroll() {
-    const reveals = document.querySelectorAll('.project-card, .blog-card, .gallery-item, .learning-card, .contact-card');
+    const reveals = document.querySelectorAll('.project-card, .blog-card, .learning-card, .contact-info-card');
 
     reveals.forEach(element => {
         const windowHeight = window.innerHeight;
@@ -271,7 +271,7 @@ function revealOnScroll() {
 
 // Set initial state for reveal elements
 document.addEventListener('DOMContentLoaded', () => {
-    const reveals = document.querySelectorAll('.project-card, .blog-card, .gallery-item, .learning-card, .contact-card');
+    const reveals = document.querySelectorAll('.project-card, .blog-card, .learning-card, .contact-info-card');
     reveals.forEach(element => {
         element.style.opacity = '0';
         element.style.transform = 'translateY(30px)';
@@ -282,66 +282,174 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('scroll', revealOnScroll);
 
 // ===================================
-// Gallery Lightbox (Simple Version)
+// Contact Form Validation & Submission
 // ===================================
-const galleryItems = document.querySelectorAll('.gallery-item');
+const contactForm = document.getElementById('contactForm');
 
-galleryItems.forEach(item => {
-    item.addEventListener('click', () => {
-        const img = item.querySelector('img');
-        if (img) {
-            // Create lightbox overlay
-            const lightbox = document.createElement('div');
-            lightbox.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.9);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 10000;
-                cursor: pointer;
-            `;
+if (contactForm) {
+    // Form validation functions
+    function validateName(name) {
+        return name.trim().length >= 2;
+    }
 
-            const lightboxImg = document.createElement('img');
-            lightboxImg.src = img.src;
-            lightboxImg.alt = img.alt;
-            lightboxImg.style.cssText = `
-                max-width: 90%;
-                max-height: 90%;
-                border-radius: 12px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            `;
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    }
 
-            lightbox.appendChild(lightboxImg);
-            document.body.appendChild(lightbox);
+    function validateSubject(subject) {
+        return subject.trim().length >= 3;
+    }
 
-            // Close on click
-            lightbox.addEventListener('click', () => {
-                document.body.removeChild(lightbox);
+    function validateMessage(message) {
+        return message.trim().length >= 10;
+    }
+
+    function showError(fieldId, message) {
+        const errorElement = document.getElementById(fieldId + 'Error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.add('active');
+        }
+    }
+
+    function clearError(fieldId) {
+        const errorElement = document.getElementById(fieldId + 'Error');
+        if (errorElement) {
+            errorElement.textContent = '';
+            errorElement.classList.remove('active');
+        }
+    }
+
+    // Real-time validation
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const subjectInput = document.getElementById('subject');
+    const messageInput = document.getElementById('message');
+
+    if (nameInput) {
+        nameInput.addEventListener('blur', () => {
+            if (!validateName(nameInput.value)) {
+                showError('name', 'Name must be at least 2 characters');
+            } else {
+                clearError('name');
+            }
+        });
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('blur', () => {
+            if (!validateEmail(emailInput.value)) {
+                showError('email', 'Please enter a valid email address');
+            } else {
+                clearError('email');
+            }
+        });
+    }
+
+    if (subjectInput) {
+        subjectInput.addEventListener('blur', () => {
+            if (!validateSubject(subjectInput.value)) {
+                showError('subject', 'Subject must be at least 3 characters');
+            } else {
+                clearError('subject');
+            }
+        });
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('blur', () => {
+            if (!validateMessage(messageInput.value)) {
+                showError('message', 'Message must be at least 10 characters');
+            } else {
+                clearError('message');
+            }
+        });
+    }
+
+    // Form submission
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Clear previous errors
+        clearError('name');
+        clearError('email');
+        clearError('subject');
+        clearError('message');
+
+        // Validate all fields
+        let isValid = true;
+
+        if (!validateName(nameInput.value)) {
+            showError('name', 'Name must be at least 2 characters');
+            isValid = false;
+        }
+
+        if (!validateEmail(emailInput.value)) {
+            showError('email', 'Please enter a valid email address');
+            isValid = false;
+        }
+
+        if (!validateSubject(subjectInput.value)) {
+            showError('subject', 'Subject must be at least 3 characters');
+            isValid = false;
+        }
+
+        if (!validateMessage(messageInput.value)) {
+            showError('message', 'Message must be at least 10 characters');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const submitText = document.getElementById('submitText');
+        const submitLoader = document.getElementById('submitLoader');
+        const formStatus = document.getElementById('formStatus');
+
+        submitBtn.disabled = true;
+        submitText.style.display = 'none';
+        submitLoader.style.display = 'inline-flex';
+        formStatus.style.display = 'none';
+        formStatus.classList.remove('success', 'error');
+
+        try {
+            // Submit form using Formspree
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: new FormData(contactForm),
+                headers: {
+                    'Accept': 'application/json'
+                }
             });
 
-            // Close on escape key
-            const closeOnEscape = (e) => {
-                if (e.key === 'Escape') {
-                    document.body.removeChild(lightbox);
-                    document.removeEventListener('keydown', closeOnEscape);
-                }
-            };
-            document.addEventListener('keydown', closeOnEscape);
+            if (response.ok) {
+                // Success
+                formStatus.textContent = 'Thank you! Your message has been sent successfully. I\'ll get back to you soon!';
+                formStatus.classList.add('success');
+                formStatus.style.display = 'block';
+                contactForm.reset();
+            } else {
+                // Error
+                formStatus.textContent = 'Oops! There was a problem sending your message. Please try again or email me directly.';
+                formStatus.classList.add('error');
+                formStatus.style.display = 'block';
+            }
+        } catch (error) {
+            // Network error
+            formStatus.textContent = 'Network error. Please check your connection and try again.';
+            formStatus.classList.add('error');
+            formStatus.style.display = 'block';
+        } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitText.style.display = 'inline-flex';
+            submitLoader.style.display = 'none';
         }
     });
-});
-
-// ===================================
-// Form Validation (if form is added later)
-// ===================================
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
 }
 
 // ===================================
