@@ -866,6 +866,9 @@
       color: var(--text-dim);
     }
     .gh-contrib-legend .gh-contrib-cell { flex-shrink: 0; }
+    @media (max-width: 640px) {
+      .gh-week-early { display: none !important; }
+    }
     :root {
       --contrib-0: #161b22;
       --contrib-1: #0e4429;
@@ -1775,18 +1778,21 @@
         }
         weeks.push(week);
       }
+      var MOBILE_START = '2025-10-26';
       // Month labels row
       var monthsHtml = '<div class="gh-contrib-months">';
       var prevMonth = -1;
       weeks.forEach(function(week) {
         var firstDay = week.find(function(c) { return c !== null; });
-        if (!firstDay) { monthsHtml += '<span class="gh-contrib-month-label" style="width:12px"></span>'; return; }
+        var weekStart = firstDay ? firstDay.date : null;
+        var earlyClass = weekStart && weekStart < MOBILE_START ? ' gh-week-early' : '';
+        if (!firstDay) { monthsHtml += '<span class="gh-contrib-month-label' + earlyClass + '" style="width:12px"></span>'; return; }
         var m = parseInt(firstDay.date.slice(5, 7), 10) - 1;
         if (m !== prevMonth) {
-          monthsHtml += '<span class="gh-contrib-month-label" style="min-width:12px;margin-right:2px">' + MONTHS[m] + '</span>';
+          monthsHtml += '<span class="gh-contrib-month-label' + earlyClass + '" style="min-width:12px;margin-right:2px">' + MONTHS[m] + '</span>';
           prevMonth = m;
         } else {
-          monthsHtml += '<span class="gh-contrib-month-label" style="width:12px;margin-right:2px"></span>';
+          monthsHtml += '<span class="gh-contrib-month-label' + earlyClass + '" style="width:12px;margin-right:2px"></span>';
         }
       });
       monthsHtml += '</div>';
@@ -1798,7 +1804,10 @@
       daysHtml += '</div>';
       var weeksHtml = '<div class="gh-contrib-weeks">';
       weeks.forEach(function(week) {
-        weeksHtml += '<div class="gh-contrib-week">';
+        var firstDay = week.find(function(c) { return c !== null; });
+        var weekStart = firstDay ? firstDay.date : null;
+        var earlyClass = weekStart && weekStart < MOBILE_START ? ' gh-week-early' : '';
+        weeksHtml += '<div class="gh-contrib-week' + earlyClass + '">';
         week.forEach(function(cell) {
           if (!cell) {
             weeksHtml += '<div class="gh-contrib-cell" data-level="0" style="visibility:hidden"></div>';
